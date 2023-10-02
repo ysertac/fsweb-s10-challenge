@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 export const FETCH_LOADING = "Yükleniyor";
 export const FETCH_ERROR = "Hata";
 export const NOT_EKLE = "NOT_EKLE";
@@ -6,6 +7,7 @@ export const NOT_SIL = "NOT_SIL";
 
 export function notEkle(not) {
   // ...
+  toast.success("Not eklendi", { theme: "light" });
   return {
     type: NOT_EKLE,
     payload: not,
@@ -14,6 +16,7 @@ export function notEkle(not) {
 
 export function notSil(notId) {
   // ...
+  toast.warn("Not silindi");
   return {
     type: NOT_SIL,
     payload: notId,
@@ -21,6 +24,7 @@ export function notSil(notId) {
 }
 
 export function fetchLoading() {
+  toast.info("Lütfen bekleyiniz", { autoClose: 1000 });
   return { type: FETCH_LOADING };
 }
 
