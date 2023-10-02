@@ -1,4 +1,4 @@
-import { NOT_EKLE, NOT_GOSTER, NOT_SIL } from "./actions";
+import { NOT_EKLE, NOT_SIL, FETCH_LOADING, FETCH_ERROR } from "./actions";
 
 const s10chLocalStorageKey = "s10ch";
 
@@ -10,6 +10,8 @@ const baslangicDegerleri = {
       body: "Bugün hava çok güzel!|En iyi arkadaşımın en iyi arkadaşı olduğumu öğrendim :)|Kedim iyileşti!",
     },
   ],
+  loading: true,
+  error: "",
 };
 
 function localStorageStateYaz(key, data) {
@@ -29,23 +31,47 @@ function baslangicNotlariniGetir(key) {
     return baslangicDegerleri;
   }
 }
-const myReducer = (state = baslangicDegerleri, action) => {
+const myReducer = (
+  state = baslangicNotlariniGetir(s10chLocalStorageKey),
+  action
+) => {
   switch (action.type) {
     case NOT_EKLE:
-      return {
+      const yeniNotStateEkle = {
         ...state,
         notlar: [...state.notlar, action.payload],
+        loading: false,
+        error: "",
       };
+      localStorageStateYaz(s10chLocalStorageKey, yeniNotStateEkle);
+      return yeniNotStateEkle;
 
     case NOT_SIL:
-      return {
+      const yeniNotStateSil = {
         ...state,
         notlar: state.notlar.filter((del) => del.id !== action.payload),
+        loading: false,
+        error: "",
+      };
+      localStorageStateYaz(s10chLocalStorageKey, yeniNotStateSil);
+      return yeniNotStateSil;
+
+    case FETCH_LOADING:
+      return {
+        ...state,
+        loading: true,
+        error: "",
+      };
+
+    case FETCH_ERROR:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
       };
 
     default:
       return state;
   }
-  console.log(action.payload);
 };
 export default myReducer;

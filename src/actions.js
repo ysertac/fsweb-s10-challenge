@@ -1,5 +1,6 @@
 import axios from "axios";
-export const NOT_GOSTER = "NOT_GOSTER";
+export const FETCH_LOADING = "Yükleniyor";
+export const FETCH_ERROR = "Hata";
 export const NOT_EKLE = "NOT_EKLE";
 export const NOT_SIL = "NOT_SIL";
 
@@ -19,26 +20,42 @@ export function notSil(notId) {
   };
 }
 
+export function fetchLoading() {
+  return { type: FETCH_LOADING };
+}
+
+export function fetchError(msg) {
+  return { type: FETCH_ERROR, payload: msg };
+}
+
 export const notEkleAPI = (yeniNot) => (dispatch) => {
+  dispatch(fetchLoading());
   axios
     .post("https://httpbin.org/anything", yeniNot)
     .then((res) => {
       if (res.status === 200) {
         // res.data objesi içerisinden ihtiyaç duyduğunuz değeri bulun ve oluşturduğunuz notEkle ile dispatch edin
-        dispatch(notEkle(res.data.data));
+        dispatch(notEkle(res.data.json));
       }
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      dispatch(fetchError(error.response.message));
+    });
 };
 
 export const notSilAPI = (id) => (dispatch) => {
+  dispatch(fetchLoading());
   console.log(id);
   axios
     .delete("https://httpbin.org/anything", { data: id })
     .then((res) => {
       if (res.status === 200) {
         // res.data objesi içerisinden ihtiyaç duyduğunuz değeri bulun ve oluşturduğunuz notSil ile dispatch edin
+        dispatch(notSil(res.data.data));
       }
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      console.log(error);
+      dispatch(fetchError(error.response.message));
+    });
 };
